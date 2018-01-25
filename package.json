@@ -1,0 +1,26 @@
+{
+  "name": "force-test",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "aframe": "^0.7.1",
+    "aframe-animation-component": "^4.0.0-beta9",
+    "aframe-extras": "^3.13.1",
+    "aframe-extras.tube": "^3.13.1",
+    "aframe-particle-system-component": "^1.0.11",
+    "aframe-react": "^4.3.0",
+    "babel-polyfill": "^6.26.0",
+    "d3": "^4.12.2",
+    "d3-force": "^1.1.0",
+    "d3-force-3d": "^1.0.7",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
