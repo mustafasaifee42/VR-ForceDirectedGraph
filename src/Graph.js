@@ -22,6 +22,7 @@ class Graph extends Component {
       this.state = {
           width: this.props.width,
           height: this.props.height,
+          depth:this.props.depth,
           data: this.props.data,  
           backgroundColor: (this.props.backgroundColor == null ? '#fff' : this.props.backgroundColor),
           nodeFill: (this.props.nodeFill == null ? '#000' : this.props.nodeFill),
@@ -38,7 +39,7 @@ class Graph extends Component {
           linkColorColumn: this.props.linkColorColumn,
           linkColorDomain: this.props.linkColorDomain,
           linkColorRange: (this.props.linkColorRange == null ? 'schemeCategory20' : this.props.linkColorRange),
-          linkStroke: (this.props.linkStroke == null ? 0.1 : this.props.linkStroke),
+          linkStroke: (this.props.linkStroke == null ? 0.05 : this.props.linkStroke),
           linkStrokeScale: (this.props.linkStrokeScale == null ? false : this.props.linkStrokeScale),
           linkStrokeColumn: this.props.linkStrokeColumn,
           linkStrokeRange: (this.props.linkStrokeRange == null ? [0.01,0.05] : this.props.linkStrokeRange),
@@ -203,15 +204,17 @@ class Graph extends Component {
     console.log(d3.min(this.state.data.nodes, (d) =>  d.x),d3.max(this.state.data.nodes, (d) =>  d.x))
     let xScale = d3.scaleLinear()
       .domain([d3.min(this.state.data.nodes, (d) =>  d.x), d3.max(this.state.data.nodes, (d) =>  d.x)])
-      .range([0,10])
+      .range([0,this.state.width])
     let yScale = d3.scaleLinear()
       .domain([d3.min(this.state.data.nodes, (d) =>  d.y), d3.max(this.state.data.nodes, (d) =>  d.y)])
-      .range([0,10])
+      .range([0,this.state.height])
     let zScale = d3.scaleLinear()
       .domain([d3.min(this.state.data.nodes, (d) =>  d.z), d3.max(this.state.data.nodes, (d) =>  d.z)])
-      .range([-10,0])
+      .range([0-this.state.depth,0])
     simulation.force("link")
         .links(this.state.data.links);
+    
+    let nodeRad = this.state.nodeRadius + 0.05
 
     function ticked() {
      node
@@ -220,7 +223,7 @@ class Graph extends Component {
           })
      nodeName
         .attr('position',(d,i) => {
-            return `${xScale(d.x) + 0.3} ${yScale(d.y)} ${zScale(d.z)}`
+            return `${xScale(d.x) + nodeRad} ${yScale(d.y)} ${zScale(d.z)}`
           })
     }
 }
