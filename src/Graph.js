@@ -23,6 +23,25 @@ class Graph extends Component {
           width: this.props.width,
           height: this.props.height,
           data: this.props.data,  
+          backgroundColor: (this.props.backgroundColor == null ? '#fff' : this.props.backgroundColor),
+          nodeFill: (this.props.nodeFill == null ? '#000' : this.props.nodeFill),
+          nodeRadius: (this.props.nodeRadius == null ? 0.25 : this.props.nodeRadius),
+          nodeRadiusScale: (this.props.nodeRadiusScale == null ? false : this.props.nodeRadiusScale),
+          nodeRadiusColumn: this.props.nodeRadiusColumn,
+          nodeRadiusRange: (this.props.nodeRadiusRange == null ? [0.1,0.5] : this.props.nodeRadiusRange),
+          nodeFillScale: (this.props.nodeFillScale == null ? false : this.props.nodeFillScale),
+          nodeFillColumn: this.props.nodeFillColumn,
+          nodeFillDomain: this.props.nodeFillDomain,
+          nodeFillRange: (this.props.nodeFillRange == null ? 'schemeCategory20': this.props.width),
+          linkColor: (this.props.linkColor == null ? '#000' : this.props.linkColor),
+          linkColorScale: (this.props.linkColorScale == null ? false : this.props.linkColorScale),
+          linkColorColumn: this.props.linkColorColumn,
+          linkColorDomain: this.props.linkColorDomain,
+          linkColorRange: (this.props.linkColorRange == null ? 'schemeCategory20' : this.props.linkColorRange),
+          linkStroke: (this.props.linkStroke == null ? 0.1 : this.props.linkStroke),
+          linkStrokeScale: (this.props.linkStrokeScale == null ? false : this.props.linkStrokeScale),
+          linkStrokeColumn: this.props.linkStrokeColumn,
+          linkStrokeRange: (this.props.linkStrokeRange == null ? [0.01,0.05] : this.props.linkStrokeRange),
         }
       this.createForceDirected = this.createForceDirected.bind(this)
     }
@@ -33,7 +52,38 @@ class Graph extends Component {
       this.createForceDirected()
     }
   createForceDirected(){
-   let color = d3.scaleOrdinal(d3.schemeCategory20);
+    let nodeColorScale, radiusScale, linkColorScale, linkRadiusScale;
+    // scales
+    if(this.state.nodeFillScale){
+      nodeColorScale = d3.scaleOrdinal(d3.schemeCategory20)
+        .domain(this.state.nodeFillDomain);
+      if(this.state.nodeFillRange != 'schemeCategory20'){
+        nodeColorScale = d3.scaleOrdinal()
+        .domain(this.state.nodeFillDomain)
+        .range(this.stata.nodeFillRange)
+      }
+    } 
+    if(this.state.nodeRadiusScale){
+      radiusScale = d3.scaleSqrt()
+        .domain([d3.min(this.state.data.nodes, (d) =>  d[this.state.nodeRadiusColumn]), d3.max(this.state.data.nodes, (d) =>  d[this.state.nodeRadiusColumn])])
+        .range(this.state.nodeRadiusRange)
+    } 
+    if(this.state.linkColorScale){
+      linkColorScale = d3.scaleOrdinal(d3.schemeCategory20)
+        .domain(this.state.linkColorDomain);
+      if(this.state.linkColorScale != 'schemeCategory20'){
+        linkColorScale = d3.scaleOrdinal()
+        .domain(this.state.linkColorDomain)
+        .range(this.stata.linkColorRange)
+      }
+    } 
+    if(this.state.linkStrokeScale){
+      linkRadiusScale = d3.scaleLinear()
+        .domain([d3.min(this.state.data.links, (d) =>  d[this.state.linkStrokeColumn]), d3.max(this.state.data.links, (d) =>  d[this.state.linkStrokeColumn])])
+        .range(this.state.linkStrokeRange)
+    } 
+   //-----------------------//
+
    let dataTemp = this.state.data;
    let simulation = d3_force.forceSimulation()
         .numDimensions(3)
@@ -99,8 +149,18 @@ class Graph extends Component {
         .data(this.state.data.nodes)
         .enter()
         .append("a-sphere")
-        .attr('color',d => color(d.group))
-        .attr('radius','0.25')
+        .attr('color',(d) => {
+          if(this.state.nodeFillScale){
+            return `${nodeColorScale(d[this.state.nodeFillColumn])}`
+          } else
+            return `${this.state.nodeFill}`
+        })
+        .attr('radius', d => {
+          if(this.state.nodeRadiusScale)
+            return radiusScale(d[this.state.nodeRadiusColumn]).toString()
+          else
+            return this.state.nodeRadius.toString()
+        })
         .attr('opacity',1)
         .on('mouseenter', selectNode)
         .on('mouseleave', deselectNode);
@@ -126,8 +186,18 @@ class Graph extends Component {
             .attr('path', (d,i) => {
               return `${xScale(d.source.x)} ${yScale(d.source.y)} ${zScale(d.source.z)}, ${xScale(d.target.x)} ${yScale(d.target.y)} ${zScale(d.target.z)}`
             })
-            .attr('material','color:#ccc')
-            .attr('radius', d => radiusScale(d.value).toString())
+            .attr('material',(d) => {
+              if(this.state.linkColorScale){
+                return `color:${linkColorScale(d[this.state.linkColorColumn])}`
+              } else
+                return `color:${this.state.linkColor}`
+            })
+            .attr('radius', d => {
+              if(this.state.linkStrokeScale)
+                return linkRadiusScale(d[this.state.linkStrokeColumn]).toString()
+              else
+                return this.state.linkStroke.toString()
+            })
             .attr('visible', true)
         });
     console.log(d3.min(this.state.data.nodes, (d) =>  d.x),d3.max(this.state.data.nodes, (d) =>  d.x))
@@ -140,9 +210,6 @@ class Graph extends Component {
     let zScale = d3.scaleLinear()
       .domain([d3.min(this.state.data.nodes, (d) =>  d.z), d3.max(this.state.data.nodes, (d) =>  d.z)])
       .range([-10,0])
-    let radiusScale = d3.scaleLinear()
-      .domain([d3.min(this.state.data.links, (d) =>  d.value), d3.max(this.state.data.links, (d) =>  d.value)])
-      .range([0.01,0.05])
     simulation.force("link")
         .links(this.state.data.links);
 
@@ -170,7 +237,7 @@ console.log(aframeExtrasTube)
         </a-assets>
 
         
-         <Entity primitive="a-sky" color="#ccc" height="100" width="100" />
+         <Entity primitive="a-sky" color={this.state.backgroundColor} height="100" width="100" />
 
         <Entity primitive="a-camera">
           <Entity primitive="a-cursor" animation__click={{property: 'scale', startEvents: 'click', from: '0.1 0.1 0.1', to: '1 1 1', dur: 15000}}/>
