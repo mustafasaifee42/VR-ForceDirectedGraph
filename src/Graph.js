@@ -20,9 +20,6 @@ class Graph extends Component {
    constructor(props){
       super(props)
       this.state = {
-          width: this.props.width,
-          height: this.props.height,
-          depth:this.props.depth,
           data: this.props.data,  
           backgroundColor: (this.props.backgroundColor == null ? '#fff' : this.props.backgroundColor),
           nodeFill: (this.props.nodeFill == null ? '#000' : this.props.nodeFill),
@@ -185,7 +182,7 @@ class Graph extends Component {
             .append("a-tube")
             .attr('class','links')
             .attr('path', (d,i) => {
-              return `${xScale(d.source.x)} ${yScale(d.source.y)} ${zScale(d.source.z)}, ${xScale(d.target.x)} ${yScale(d.target.y)} ${zScale(d.target.z)}`
+              return `${(d.source.x/10)} ${(d.source.y/10)} ${(d.source.z/10)}, ${(d.target.x/10)} ${(d.target.y/10)} ${(d.target.z/10)}`
             })
             .attr('material',(d) => {
               if(this.state.linkColorScale){
@@ -202,15 +199,7 @@ class Graph extends Component {
             .attr('visible', true)
         });
     console.log(d3.min(this.state.data.nodes, (d) =>  d.x),d3.max(this.state.data.nodes, (d) =>  d.x))
-    let xScale = d3.scaleLinear()
-      .domain([d3.min(this.state.data.nodes, (d) =>  d.x), d3.max(this.state.data.nodes, (d) =>  d.x)])
-      .range([0,this.state.width])
-    let yScale = d3.scaleLinear()
-      .domain([d3.min(this.state.data.nodes, (d) =>  d.y), d3.max(this.state.data.nodes, (d) =>  d.y)])
-      .range([0,this.state.height])
-    let zScale = d3.scaleLinear()
-      .domain([d3.min(this.state.data.nodes, (d) =>  d.z), d3.max(this.state.data.nodes, (d) =>  d.z)])
-      .range([0-this.state.depth,0])
+
     simulation.force("link")
         .links(this.state.data.links);
     
@@ -219,11 +208,11 @@ class Graph extends Component {
     function ticked() {
      node
           .attr("position", (d,i) => {
-            return `${xScale(d.x)} ${yScale(d.y)} ${zScale(d.z)}`
+            return `${d.x/10} ${(d.y/10)} ${(d.z/10)}`
           })
      nodeName
         .attr('position',(d,i) => {
-            return `${xScale(d.x) + nodeRad} ${yScale(d.y)} ${zScale(d.z)}`
+            return `${(d.x/10) + nodeRad} ${(d.y/10)} ${d.z/10}`
           })
     }
 }

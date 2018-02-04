@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "3d-force-graph-vr": "^1.10.1",
     "aframe": "^0.7.1",
     "aframe-animation-component": "^4.0.0-beta9",
     "aframe-extras": "^3.13.1",
