@@ -22,9 +22,6 @@ Runs the app in the development mode.
 
 ```
 <Graph 
-  width = {10}
-  height = {10}
-  depth = {10}
   data = {data}
   backgroundColor = {'#eee'}
   nodeFill = {'#ccc'}
@@ -46,9 +43,6 @@ Runs the app in the development mode.
 
 Name|Default|Type|Description
 --- | --- | --- | ---
-width||Float|Width of the graph **(Required)**
-height||Float|Height of the graph **(Required)**
-depth||Float|Depth of the graph **(Required)**
 data||Object|Data needs to be in json format **(Required)**
 backgroundColor|`#fff`|String|Background color
 nodeFill|`#000`|String|Color of the nodes
